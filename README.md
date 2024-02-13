@@ -15,6 +15,17 @@ der Backgrounds müssen die gleichen sein, wie die Namen der "Sources" in OBS.
 Die `cameraID` ist die ID der Virtual Camera von OBS. Man kann die richtige ID durch Ausprobieren finden, wahrscheinlich ist es eine Zahl zwischen 0 und 5.
 1. Script starten.
 
+### OBS Einstellungen für UHD Bilder
+
+Damit die Bilder mit ihrer vollen Auflösung gespeichert werden, muss man OBS so einstellen, dass es das Video mit der richtigen Auflösung streamt.
+
+1. Unter `Settings/Video` bei OBS muss man bei `Base` und `Output` Resolution `3840x2160` angeben.
+
+oder
+
+1. Rechtsklick auf Video Input
+2. `Resize output (source size)`
+
 ## Features
 
 1. Man kann einen von mehreren Hintergründen aussuchen.
