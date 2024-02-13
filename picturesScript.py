@@ -13,10 +13,21 @@ root = Tk()
 cameraID = 3
 camera_name = "Video Capture Device"
 backgrounds = ["Berg", "Strand", "Lissabon"]
-width = 1920/2
-height = 1080/2
+actual_width = 3840
+actual_height = 2160
+display_width = 192
+# actualWidth/20
+display_height = 108
 default_font = Font(size=18)
 button_font = Font(size=16)
+
+def resize_to_diplay_size(cap):
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, display_width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, display_height)
+
+def resize_to_picture_size(cap):
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, actual_width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, actual_height)
 
 # obs setup
 # import logging
@@ -82,14 +93,14 @@ def disable_background(item_id):
 photoIndex = 0
 
 # GUI
-video = Frame(root, bg="white", width=width, height=height)
+video = Frame(root, bg="white", width=display_width, height=display_height)
 video.grid(column=1)
 lmain = Label(video)
 lmain.grid()
 # Capture from camera
 cap = cv2.VideoCapture(cameraID)
-cap.set(3, width)
-cap.set(4, height)
+resize_to_diplay_size(cap)
+
 # function for video streaming
 
 
@@ -97,10 +108,10 @@ def video_stream():
     _, frame = cap.read()
     cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
     img = Image.fromarray(cv2image)
-    imgtk = ImageTk.PhotoImage(image=img, height=height, width=width)
+    imgtk = ImageTk.PhotoImage(image=img, height=display_height, width=display_width)
     lmain.imgtk = imgtk
-    lmain.configure(image=imgtk, height=height, width=width)
-    lmain.after(1, video_stream)
+    lmain.configure(image=imgtk, height=display_height, width=display_width)
+    lmain.after(3, video_stream)
 
 
 video_stream()
@@ -173,7 +184,9 @@ success_text.grid()
 
 def take_picture(event):
     global photoIndex
+    resize_to_picture_size(cap)
     _, frame = cap.read()
+    resize_to_diplay_size(cap)
     name = get_new_picture_name()
     if cv2.imwrite("img/" + name, frame):
         success_text.config(
