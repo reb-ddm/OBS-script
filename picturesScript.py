@@ -105,12 +105,15 @@ resize_to_diplay_size(cap)
 
 
 def video_stream():
-    _, frame = cap.read()
-    cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-    img = Image.fromarray(cv2image)
-    imgtk = ImageTk.PhotoImage(image=img, height=display_height, width=display_width)
-    lmain.imgtk = imgtk
-    lmain.configure(image=imgtk, height=display_height, width=display_width)
+    try:
+        _, frame = cap.read()
+        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+        img = Image.fromarray(cv2image)
+        imgtk = ImageTk.PhotoImage(image=img, height=display_height, width=display_width)
+        lmain.imgtk = imgtk
+        lmain.configure(image=imgtk, height=display_height, width=display_width)
+    except:
+        print("An exception occurred in video_stream")
     lmain.after(3, video_stream)
 
 
