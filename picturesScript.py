@@ -12,14 +12,16 @@ root = Tk()
 # settings
 cameraID = 3
 camera_name = "Video Capture Device"
-backgrounds = ["Berg", "Strand", "Lissabon"]
+backgrounds = ["Berg 1", "Berg 2", "Berg 3", "Blumenwiese"]
 actual_width = 3840
 actual_height = 2160
-display_width = 192
+display_width = actual_width/4
 # actualWidth/20
-display_height = 108
+display_height = actual_height/4
 default_font = Font(size=18)
 button_font = Font(size=16)
+
+link_background_source = 'Freepik.com'
 
 def resize_to_diplay_size(cap):
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, display_width)
@@ -154,7 +156,7 @@ for background in backgrounds:
 take_pictures_frame = Frame(root)
 take_pictures_frame.grid(column=1, row=1)
 take_pictures_label = Label(
-    take_pictures_frame, text="Name des Bildes", font=default_font)
+    take_pictures_frame, text="Name des Bildes (optional)", font=default_font)
 take_pictures_label.grid()
 picture_name_entry = Entry(take_pictures_frame)
 picture_name_entry.grid()
@@ -201,32 +203,34 @@ def take_picture(event):
 button.bind("<Button-1>", take_picture)
 button.grid()
 
-five_sec_button = Button(
-    take_pictures_frame, text="Foto aufnehmen in 5 Sekunden", font=button_font)
-five_sec_frame = Frame(root)
-five_sec_frame.grid(column=2, row=0)
-five_sec_label = Label(five_sec_frame, font=("Arial", 35, BOLD))
-five_sec_label.grid()
+ten_sec_button = Button(
+    take_pictures_frame, text="Foto aufnehmen in 10 Sekunden", font=button_font)
+ten_sec_frame = Frame(root)
+ten_sec_frame.grid(column=2, row=0)
+ten_sec_label = Label(ten_sec_frame, font=("Arial", 35, BOLD))
+ten_sec_label.grid()
 
 
 def take_picture_in_n_sec(event, n):
     for i in range(n, 0, -1):
-        five_sec_label.config(text=str(i))
+        ten_sec_label.config(text=str(i))
         print(i)
         time.sleep(1)
-    five_sec_label.config(text="0")
+    ten_sec_label.config(text="0")
     take_picture(event)
-    five_sec_label.config(text="")
+    ten_sec_label.config(text="")
 
 
-def take_picture_in_5_sec_in_new_thread(event):
-    t = Timer(0, take_picture_in_n_sec, args=[None, 5], kwargs=None)
+def take_picture_in_10_sec_in_new_thread(event):
+    t = Timer(0, take_picture_in_n_sec, args=[None, 10], kwargs=None)
     t.start()
 
 
-five_sec_button.bind("<Button-1>", take_picture_in_5_sec_in_new_thread)
-five_sec_button.grid()
+ten_sec_button.bind("<Button-1>", take_picture_in_10_sec_in_new_thread)
+ten_sec_button.grid()
 
+source_text = Label(take_pictures_frame, text="Quelle der Hintergrundbilder: "+ link_background_source)
+source_text.grid()
 
 # start GUI
 root.mainloop()
