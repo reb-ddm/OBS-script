@@ -7,6 +7,7 @@ import cv2
 import os
 import time
 from threading import Timer
+import glob
 root = Tk()
 
 # settings
@@ -32,8 +33,6 @@ def resize_to_picture_size(cap):
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, actual_height)
 
 # obs setup
-# import logging
-# logging.basicConfig(level=logging.DEBUG)
 serverIP = "192.168.56.1"
 serverPort = "4455"
 serverPassword = "CJ6kMU1YRr0IkEYo"
@@ -58,12 +57,10 @@ async def make_request(requestType, requestData=None):
 
 # obs requests
 
-
 def get_items():
     loop = asyncio.get_event_loop()
     item_list = loop.run_until_complete(make_request('GetInputList'))
     return item_list.get("inputs")
-
 
 def get_item_id(item_name):
     loop = asyncio.get_event_loop()
@@ -75,13 +72,11 @@ def get_item_id(item_name):
     else:
         return None
 
-
 def enable_background(item_id):
     loop = asyncio.get_event_loop()
     loop.run_until_complete(make_request('SetSceneItemEnabled', {"sceneName": sceneName,
                                                                  "sceneItemId": item_id,
                                                                  "sceneItemEnabled": True}))
-
 
 def disable_background(item_id):
     loop = asyncio.get_event_loop()
@@ -89,7 +84,6 @@ def disable_background(item_id):
     loop.run_until_complete(make_request('SetSceneItemEnabled', {"sceneName": sceneName,
                                                                  "sceneItemId": item_id,
                                                                  "sceneItemEnabled": False}))
-
 
 # photo naming
 photoIndex = 0
@@ -101,11 +95,11 @@ lmain = Label(video)
 lmain.grid()
 # Capture from camera
 cap = cv2.VideoCapture(cameraID)
+# rawCap = cv2.VideoCapture(rawCameraID)
 resize_to_diplay_size(cap)
+# resize_to_diplay_size(rawCap)
 
 # function for video streaming
-
-
 def video_stream():
     try:
         _, frame = cap.read()
@@ -118,7 +112,6 @@ def video_stream():
         print("An exception occurred in video_stream")
     lmain.after(3, video_stream)
 
-
 video_stream()
 
 # backgrounds
@@ -127,7 +120,6 @@ change_background_frame.grid(column=0, row=0)
 change_background_text = Label(
     change_background_frame, text="Hintergrund ändern", font=default_font)
 change_background_text.grid()
-
 
 def change_background(background_name):
     print("Enabling background: " + background_name)
@@ -141,7 +133,6 @@ def change_background(background_name):
             elif name != camera_name:
                 disable_background(item_id)
 
-
 background_buttons = []
 for background in backgrounds:
     background_button = Button(
@@ -150,7 +141,6 @@ for background in backgrounds:
                            bg=background: change_background(bg))
     background_button.grid()
     background_buttons.append(background_button)
-
 
 # take pictures
 take_pictures_frame = Frame(root)
@@ -161,44 +151,44 @@ take_pictures_label.grid()
 picture_name_entry = Entry(take_pictures_frame)
 picture_name_entry.grid()
 
-
 def get_picture_name():
     typed_name = picture_name_entry.get()
     if typed_name == "":
-        picture_name = str(photoIndex)
+        picture_name = ""
     else:
-        picture_name = str(photoIndex) + " - " + typed_name
+        picture_name = " - " + typed_name
     picture_name_entry.delete(0, END)
     return picture_name + ".jpg"
 
+def file_number_exists(number):
+    return len(glob.glob("img/" + str(number) + ".jpg")) > 0 or len(glob.glob("img/" + str(number) + " - *")) > 0
 
 def get_new_picture_name():
     global photoIndex
-    name = get_picture_name()
-    photoIndex += 1
-    while os.path.exists("img/" + name):
-        name = get_picture_name()
+    while file_number_exists(photoIndex):
         photoIndex += 1
+    name = str(photoIndex) + get_picture_name()
+    photoIndex += 1
     return name
-
 
 button = Button(take_pictures_frame, text="Foto aufnehmen!", font=button_font)
 success_text = Label(take_pictures_frame)
 success_text.grid()
 
-
 def take_picture(event):
     global photoIndex
+    name = get_new_picture_name()
+    # _, rawFrame = rawCap.read()
+    # if not cv2.imwrite("raw/" + name, frame):
+    #     success_text.config(text="Fehler beim speichern des Fotos.")
     resize_to_picture_size(cap)
     _, frame = cap.read()
     resize_to_diplay_size(cap)
-    name = get_new_picture_name()
     if cv2.imwrite("img/" + name, frame):
         success_text.config(
             text="Bild erfolgreich gespeichert unter " + os.getcwd() + "\\img\\" + name)
     else:
         success_text.config(text="Fehler beim speichern des Bildes.")
-
 
 button.bind("<Button-1>", take_picture)
 button.grid()
@@ -210,7 +200,6 @@ ten_sec_frame.grid(column=2, row=0)
 ten_sec_label = Label(ten_sec_frame, font=("Arial", 35, BOLD))
 ten_sec_label.grid()
 
-
 def take_picture_in_n_sec(event, n):
     for i in range(n, 0, -1):
         ten_sec_label.config(text=str(i))
@@ -220,11 +209,9 @@ def take_picture_in_n_sec(event, n):
     take_picture(event)
     ten_sec_label.config(text="")
 
-
 def take_picture_in_10_sec_in_new_thread(event):
     t = Timer(0, take_picture_in_n_sec, args=[None, 10], kwargs=None)
     t.start()
-
 
 ten_sec_button.bind("<Button-1>", take_picture_in_10_sec_in_new_thread)
 ten_sec_button.grid()
