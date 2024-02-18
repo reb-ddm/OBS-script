@@ -10,36 +10,30 @@ from threading import Timer
 import glob
 root = Tk()
 
-# settings
+## settings
+
 cameraID = 3
 camera_name = "Video Capture Device"
 backgrounds = ["Berg 1", "Berg 2", "Berg 3", "Blumenwiese"]
 actual_width = 3840
 actual_height = 2160
 display_width = actual_width/4
-# actualWidth/20
 display_height = actual_height/4
 default_font = Font(size=18)
 button_font = Font(size=16)
-
-link_background_source = 'Freepik.com'
-
-def resize_to_diplay_size(cap):
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, display_width)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, display_height)
-
-def resize_to_picture_size(cap):
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, actual_width)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, actual_height)
-
 # obs setup
 serverIP = "192.168.56.1"
 serverPort = "4455"
 serverPassword = "CJ6kMU1YRr0IkEYo"
 sceneName = "Scena"
+# image source
+link_background_source = 'Freepik.com'
+
+
+## obs requests
+
 ws = simpleobsws.WebSocketClient(
     url='ws://localhost:' + serverPort, password=serverPassword)
-
 
 async def make_request(requestType, requestData=None):
     await ws.connect()  # Make the connection to obs-websocket
@@ -54,8 +48,6 @@ async def make_request(requestType, requestData=None):
         response_data = ret.responseData
     await ws.disconnect()  # Disconnect from the websocket server cleanly
     return response_data
-
-# obs requests
 
 def get_items():
     loop = asyncio.get_event_loop()
@@ -85,15 +77,24 @@ def disable_background(item_id):
                                                                  "sceneItemId": item_id,
                                                                  "sceneItemEnabled": False}))
 
-# photo naming
-photoIndex = 0
 
-# GUI
+## GUI
+
+# video frame
 video = Frame(root, bg="white", width=display_width, height=display_height)
 video.grid(column=1)
 lmain = Label(video)
 lmain.grid()
+
 # Capture from camera
+def resize_to_diplay_size(cap):
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, display_width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, display_height)
+
+def resize_to_picture_size(cap):
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, actual_width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, actual_height)
+
 cap = cv2.VideoCapture(cameraID)
 # rawCap = cv2.VideoCapture(rawCameraID)
 resize_to_diplay_size(cap)
@@ -142,7 +143,10 @@ for background in backgrounds:
     background_button.grid()
     background_buttons.append(background_button)
 
-# take pictures
+
+## take pictures
+
+# frame for buttons
 take_pictures_frame = Frame(root)
 take_pictures_frame.grid(column=1, row=1)
 take_pictures_label = Label(
@@ -150,6 +154,9 @@ take_pictures_label = Label(
 take_pictures_label.grid()
 picture_name_entry = Entry(take_pictures_frame)
 picture_name_entry.grid()
+
+# picture naming
+photoIndex = 0
 
 def get_picture_name():
     typed_name = picture_name_entry.get()
