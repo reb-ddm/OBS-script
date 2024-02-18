@@ -34,6 +34,8 @@ link_background_source = 'Freepik.com'
 
 ws = simpleobsws.WebSocketClient(
     url='ws://localhost:' + serverPort, password=serverPassword)
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
 
 async def make_request(requestType, requestData=None):
     await ws.connect()  # Make the connection to obs-websocket
