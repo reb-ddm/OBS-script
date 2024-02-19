@@ -1,1 +1,4 @@
 img/
+tmp/
+obsServerSettings.py
+__pycache__

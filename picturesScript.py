@@ -8,6 +8,7 @@ import os
 import time
 from threading import Timer
 import glob
+from obsServerSettings import *
 root = Tk()
 
 ## settings
@@ -15,17 +16,13 @@ root = Tk()
 cameraID = 3
 camera_name = "Video Capture Device"
 backgrounds = ["Berg 1", "Berg 2", "Berg 3", "Blumenwiese"]
+sceneName = "Scena"
 actual_width = 3840
 actual_height = 2160
 display_width = actual_width/4
 display_height = actual_height/4
 default_font = Font(size=18)
 button_font = Font(size=16)
-# obs setup
-serverIP = "192.168.56.1"
-serverPort = "4455"
-serverPassword = "CJ6kMU1YRr0IkEYo"
-sceneName = "Scena"
 # image source
 link_background_source = 'Freepik.com'
 
