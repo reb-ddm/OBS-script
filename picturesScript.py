@@ -15,8 +15,8 @@ root = Tk()
 
 cameraID = 3
 camera_name = "Video Capture Device"
-backgrounds = ["Berg 1", "Berg 2", "Berg 3", "Blumenwiese"]
-sceneName = "Scena"
+backgrounds = ["Berg 1", "Berg 2", "Berg 3", "Strand", "Sturm", "Skyline", "Farben", "Erde", "Wasser", "Feuer", "Luft"]
+sceneName = "Scene"
 actual_width = 3840
 actual_height = 2160
 display_width = actual_width/4
